@@ -103,14 +103,19 @@ namespace kainos2015intern.Controllers
 
                 var genresq = (from link in context.MovieGenres
                                join genres in context.Genres on link.GenreId equals genres.Id
-                               group genres.Name by link.GenreId into genre
+                               group link.GenreId by genres.Name into genre
                                select new
                                {
-                                   genre.Key,
+                                   genreName = genre.Key,
                                    genreCount = genre.Count()
                                });
 
-                string type = genresq.GetType().ToString();
+                List<Tuple<string, int>> genresList = new List<Tuple<string, int>>();
+                foreach (var list in genresq)
+                    genresList.Add(new Tuple<string, int>(list.genreName, list.genreCount));
+
+                ViewBag.genres = genresList;
+
                 return View("TopGenre");
             }
             catch (Exception e)
