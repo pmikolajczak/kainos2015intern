@@ -1,0 +1,40 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<body>
+    <div> 
+        @using (Html.BeginForm("Search", "Home"))
+        {
+            <input type="text" id="filmText" name="filmText" placeholder="Film name" value="@ViewBag.filmName"/>
+            <input type="number" step="any" min="1" max="10" id="scoreText" name="scoreText" placeholder="Average score" value="@ViewBag.score"/>
+            <input type="submit" id="submitSearch" value="Search" />
+        }
+        <br />
+        <table id="filmSearch">
+            <thead>
+                <tr>
+                    <th>Film Title</th>
+                    <th>Average Score</th>
+                    <th>Details Link</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    foreach (dbContext.Movie movie in ViewBag.movies)
+                    {
+                        <tr>
+                            <td>@movie.Title</td>
+                            <td>@movie.VoteAverage</td>
+                            <td>@Html.ActionLink("Details", "Movie", new { Id = @movie.Id })</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

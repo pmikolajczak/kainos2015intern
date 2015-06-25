@@ -1,0 +1,32 @@
+﻿@{
+    Layout = null;
+
+}
+<!DOCTYPE html>
+<html>
+<body>
+    <div>
+        <table id="filmRanking">
+            <thead>
+                <tr>
+                    <th>Film Title</th>
+                    <th>Average Score</th>
+                    <th>Details Link</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    foreach (dbContext.Movie movie in ViewBag.moviesRanking)
+                    {
+                        <tr>
+                            <td>@movie.Title</td>
+                            <td>@movie.VoteAverage</td>
+                            <td>@Html.ActionLink("Details", "Movie", new { Id = @movie.Id })</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

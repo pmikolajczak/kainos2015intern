@@ -1,0 +1,34 @@
+﻿
+@{
+    Layout = null;
+    dbContext.Movie movie = (dbContext.Movie) ViewBag.movie;
+}
+
+<!DOCTYPE html>
+
+<html>
+<body>
+    <div> 
+        <table id="filmDetails">
+            <tbody>
+                <tr>
+                    <td>Film Title:</td>
+                    <td>@movie.OriginalTitle</td>
+                </tr>
+                <tr>
+                    <td>Average score:</td>
+                    <td>@movie.VoteAverage</td>
+                </tr>
+                <tr>
+                    <td>Genres represented:</td>
+                    <td>@ViewBag.genres</td>
+                </tr>
+                <tr>
+                    <td>Plot:</td>
+                    <td>@ViewBag.plot</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
