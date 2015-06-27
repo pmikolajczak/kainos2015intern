@@ -133,21 +133,13 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Models\CopyMe.PostgreSQL1.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>CopyMe.PostgreSQL.tt</DependentUpon>
-    </Compile>
+    <Compile Include="Models\DataModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="LinqToDB.Templates\CopyMe.PostgreSQL.tt.txt" />
-    <None Include="Models\CopyMe.PostgreSQL.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>CopyMe.PostgreSQL1.generated.cs</LastGenOutput>
-    </None>
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>

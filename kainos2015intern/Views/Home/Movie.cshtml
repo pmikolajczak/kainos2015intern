@@ -21,7 +21,14 @@
                 </tr>
                 <tr>
                     <td>Genres represented:</td>
-                    <td>@ViewBag.genres</td>
+                    <td>@{
+                        foreach (DataModels.genre genre in ViewBag.genres)
+                        {
+                            string name = genre.name + " ";
+                            @name
+                        }
+                    }
+                    </td>
                 </tr>
                 <tr>
                     <td>Plot:</td>

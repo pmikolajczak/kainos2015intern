@@ -53,15 +53,9 @@ namespace kainos2015intern.Controllers
                                           where movie.id == id.Value
                                           select movie).SingleOrDefault();
 
-                List<DataModels.movie_genre> mgs = (from movieGenre in context.movie_genre //wtf linq2db doesnt get fk entities
-                                                    where movieGenre.movie_id == movieD.id //looks worse than sql now
-                                                    select movieGenre).ToList();
-                
-                string genres = "";
-                foreach (DataModels.movie_genre mg in mgs)
-                    genres += (from genre in context.genres
-                               where genre.id == mg.genre_id
-                               select genre.name).SingleOrDefault().ToString() + " ";
+                List<DataModels.genre> genres = (from mg in context.movie_genre
+                                              where mg.moviegenremovieidfkey.id == movieD.id
+                                              select mg.moviegenregenreidfkey).ToList();
 
                 string ombdRequest = "http://www.omdbapi.com/?t=" + HttpUtility.UrlEncode(movieD.title) + "&y=&plot=full&r=xml";
                 XmlDocument ombdRespond = MakeOmbdRequest(ombdRequest);
@@ -100,15 +94,20 @@ namespace kainos2015intern.Controllers
                 DataModels.dbContext context = new DataModels.dbContext();
                 string score = Request["scoreText"];
                 string genresArr = Request["genres"];
-                List<string> genresSelected = new List<string>();
+                List<DataModels.genre> genresSelected = new List<DataModels.genre>();
 
-                ViewBag.genres = (List<string>)(from genre in context.genres
-                                  select genre.name).ToList();
-                ViewBag.score = score;
+                List<DataModels.genre> genres = (from genre in context.genres
+                                  select genre).ToList();
+
                 if (!String.IsNullOrEmpty(genresArr))
                 {
-                    genresSelected = fixNamesList(genresArr.Split(',').ToList(), ViewBag.genres);
+                    genresSelected = (from genre in genres
+                                      where genresArr.Split(',').Contains(genre.id.ToString())
+                                      select genre).ToList();
                 }
+
+                ViewBag.score = score;
+                ViewBag.genres = genres;
                 ViewBag.genresSelected = genresSelected;
                 ViewBag.movieList = getMoviesSearchList(genresSelected, score);
 
@@ -193,99 +192,60 @@ namespace kainos2015intern.Controllers
             }
         }
 
-        private List<string> fixNamesList(List<string> names, List<string> genres)
+        private List<DataModels.movie> getMoviesSearchList(List<DataModels.genre> name, string score)
         {
-            List<string> fixedNames = new List<string>();
-
-            foreach (string genre in genres)
-            {
-                foreach (string name in names)
-                {
-                    if (genre.Contains(name))
-                    {
-                        string newName = genre;
-                        fixedNames.Add(newName);
-                    }
-                }
-            }
-
-            return fixedNames;
-        }
-
-        private List<DataModels.movie> getMoviesSearchList(List<string> name, string score)
-        {
-            DataModels.dbContext context = new DataModels.dbContext();
             List<DataModels.movie> movies = new List<DataModels.movie>();
 
-            if (name.Any() && !String.IsNullOrEmpty(score))
+            using (DataModels.dbContext context = new DataModels.dbContext())
             {
-                float f = float.Parse(score, CultureInfo.InvariantCulture);
-
-                if (name.Count > 1) //intersections didnt work or im too dumb
+                if (name.Any() && !String.IsNullOrEmpty(score))
                 {
-                    List<DataModels.movie> moviesWduplicates =
-                             (from movie in context.movies
-                              from genre in context.genres
-                              from mg in context.movie_genre
-                              where (movie.id == mg.movie_id &&
-                                     mg.genre_id == genre.id &&
-                                     name.Contains(genre.name) &&
-                                     movie.vote_average >= f)
+                    float f = float.Parse(score, CultureInfo.InvariantCulture);
+                    List<int> nameIdList = name.Select(n => n.id).ToList();
+
+                    var qq = (from genre in
+                                  (from g in context.genres where nameIdList.Contains(g.id) select g)
+                              join mg in context.movie_genre on genre.id equals mg.genre_id
+                              group mg.moviegenremovieidfkey.id by mg.movie_id into movie
+                              select new
+                              {
+                                  movieCount = movie.Count(),
+                                  movieId = movie.Key
+                              });
+                    movies = (from mvs in qq
+                              join movie in context.movies on mvs.movieId equals movie.id
+                              where movie.vote_average >= f && mvs.movieCount == name.Count
+                              orderby movie.title ascending, movie.vote_average descending
                               select movie).ToList();
-
-                    movies = (from m in moviesWduplicates
-                              group m by m.title into mv
-                              where mv.Count() == name.Count
-                              select mv.First()).ToList();
                 }
-                else
+                else if (name.Any())
                 {
+                    List<int> nameIdList = name.Select(n => n.id).ToList();
+
+                    var qq = (from genre in
+                                  (from g in context.genres where nameIdList.Contains(g.id) select g)
+                              join mg in context.movie_genre on genre.id equals mg.genre_id
+                              group mg.moviegenremovieidfkey.id by mg.movie_id into movie
+                              select new
+                              {
+                                  movieCount = movie.Count(),
+                                  movieId = movie.Key
+                              });
+                    movies = (from mvs in qq
+                              join movie in context.movies on mvs.movieId equals movie.id
+                              where mvs.movieCount == name.Count
+                              orderby movie.title ascending, movie.vote_average descending
+                              select movie).ToList();
+                }
+                else if (!String.IsNullOrEmpty(score))
+                {
+                    float f = float.Parse(score, CultureInfo.InvariantCulture);
+
                     movies = (from movie in context.movies
-                              from genre in context.genres
-                              from mg in context.movie_genre
-                              where (movie.id == mg.movie_id &&
-                                     mg.genre_id == genre.id &&
-                                     name.Contains(genre.name) &&
-                                     movie.vote_average >= f)
+                              where movie.vote_average >= f
+                              orderby movie.title ascending, movie.vote_average descending
                               select movie).ToList();
                 }
-            }
-            else if (name.Any())
-            {
-                if (name.Count > 1)
-                {
-                    List<DataModels.movie> moviesWduplicates =
-                             (from movie in context.movies
-                              from genre in context.genres
-                              from mg in context.movie_genre
-                              where (movie.id == mg.movie_id &&
-                                     mg.genre_id == genre.id &&
-                                     name.Contains(genre.name))
-                              select movie).ToList();
-
-                    movies = (from m in moviesWduplicates
-                              group m by m.title into mv
-                              where mv.Count() == name.Count
-                              select mv.First()).ToList();
-                }
-                else
-                {
-                    movies = (from movie in context.movies
-                              from genre in context.genres
-                              from mg in context.movie_genre
-                              where (movie.id == mg.movie_id &&
-                                     mg.genre_id == genre.id &&
-                                     name.Contains(genre.name))
-                              select movie).ToList();
-                }
-            }
-            else if (!String.IsNullOrEmpty(score))
-            {
-                float f = float.Parse(score, CultureInfo.InvariantCulture);
-
-                movies = (from movie in context.movies
-                          where movie.vote_average >= f
-                          select movie).ToList();
             }
 
             return movies;

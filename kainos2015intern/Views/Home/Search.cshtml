@@ -1,5 +1,7 @@
 ﻿@{
     Layout = null;
+    List<DataModels.genre> genresSelected = (ViewBag.genresSelected == null) ? 
+        new List<DataModels.genre>() : (List<DataModels.genre>)ViewBag.genresSelected;
 }
 
 <!DOCTYPE html>
@@ -10,16 +12,10 @@
         @using (Html.BeginForm("Search", "Home"))
         {
             int counter = 0;
-            foreach (string name in ViewBag.genres)
+            foreach (DataModels.genre name in ViewBag.genres)
             {
-                if (ViewBag.genresSelected != null)
-                {
-                    <label><input type="checkbox" name="genres" value=@name checked="@( ((List<string>)ViewBag.genresSelected).Contains(name.Split(' ')[0]) )" />@name</label>
-                }
-                else
-                {
-                    <label><input type="checkbox" name="genres" value=@name />@name</label>
-                }
+                <label><input type="checkbox" name="genres" value=@name.id checked="@genresSelected.Any(g => g.name == name.name)" />@name.name</label>
+                
                 counter++;
                 if (counter > 4)
                 {
