@@ -7,13 +7,16 @@
 <!DOCTYPE html>
 
 <html>
+<head>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
+</head>
 <body>
-    <div> 
+    <div>
         @using (Html.BeginForm("Search", "Home"))
         {
             int counter = 0;
             foreach (DataModels.genre name in ViewBag.genres)
-            {
+            {  
                 <label><input type="checkbox" name="genres" value=@name.id checked="@genresSelected.Any(g => g.name == name.name)" />@name.name</label>
                 
                 counter++;
@@ -23,12 +26,12 @@
                     counter = 0;
                 }
             }
-            
+            <br />
             <input type="number" step="any" min="1" max="10" id="scoreText" name="scoreText" placeholder="Average score" value="@ViewBag.score"/>
             <input type="submit" id="submitSearch" value="Search" />
         }
         <br />
-        <table id="filmSearch">
+        <table id="filmSearch" class="table">
             <thead>
                 <tr>
                     <th>Film Title</th>
@@ -50,5 +53,9 @@
             </tbody>
         </table>
     </div>
+
+    <script src="~/Scripts/jquery-2.1.4.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+
 </body>
 </html>

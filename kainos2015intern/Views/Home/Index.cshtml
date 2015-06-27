@@ -3,12 +3,17 @@
 
 }
 <!DOCTYPE html>
+
 <html>
+<head>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
+</head>
 <body>
     <div>
-        <table id="filmRanking">
+        <table id="filmRanking" class="table">
             <thead>
                 <tr>
+                    <th>Nr.</th>
                     <th>Film Title</th>
                     <th>Average Score</th>
                     <th>Details Link</th>
@@ -16,17 +21,26 @@
             </thead>
             <tbody>
                 @{
+                    int counter = 1;
+                  
                     foreach (DataModels.movie movie in ViewBag.moviesRanking)
                     {
                         <tr>
+                            <td>@counter</td>
                             <td>@movie.title</td>
                             <td>@movie.vote_average</td>
                             <td>@Html.ActionLink("Details", "Movie", new { Id = @movie.id })</td>
                         </tr>
+                        
+                        counter++;
                     }
                 }
             </tbody>
         </table>
     </div>
+
+    <script src="~/Scripts/jquery-2.1.4.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+
 </body>
 </html>
