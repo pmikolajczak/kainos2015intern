@@ -31,14 +31,14 @@ namespace kainos2015intern.Controllers
 
         public List<DataModels.movie> getMoviesRanking()
         {
-            DataModels.dbContext context = new DataModels.dbContext();
+            using (DataModels.dbContext context = new DataModels.dbContext())
+            {
+                List<DataModels.movie> moviesList = (from movie in context.movies
+                                                     orderby movie.vote_average descending, movie.release_date ascending
+                                                     select movie).Take(20).ToList();
 
-            List<DataModels.movie> moviesList = (from movie in context.movies
-                                                orderby movie.vote_average descending, movie.release_date ascending
-                                                select movie).Take(20).ToList();
-
-            context.Dispose();
-            return moviesList;
+                return moviesList;
+            }
         }
 
         public ActionResult Movie(int? id)
@@ -48,38 +48,39 @@ namespace kainos2015intern.Controllers
 
             try
             {
-                DataModels.dbContext context = new DataModels.dbContext();
-                DataModels.movie movieD = (from movie in context.movies
-                                          where movie.id == id.Value
-                                          select movie).SingleOrDefault();
-
-                List<DataModels.genre> genres = (from mg in context.movie_genre
-                                              where mg.moviegenremovieidfkey.id == movieD.id
-                                              select mg.moviegenregenreidfkey).ToList();
-
-                string ombdRequest = "http://www.omdbapi.com/?t=" + HttpUtility.UrlEncode(movieD.title) + "&y=&plot=full&r=xml";
-                XmlDocument ombdRespond = MakeOmbdRequest(ombdRequest);
-
-                if (ombdRespond != null)
+                using (DataModels.dbContext context = new DataModels.dbContext())
                 {
-                    try
+                    DataModels.movie movieD = (from movie in context.movies
+                                               where movie.id == id.Value
+                                               select movie).SingleOrDefault();
+
+                    List<DataModels.genre> genres = (from mg in context.movie_genre
+                                                     where mg.moviegenremovieidfkey.id == movieD.id
+                                                     select mg.moviegenregenreidfkey).ToList();
+
+                    string ombdRequest = "http://www.omdbapi.com/?t=" + HttpUtility.UrlEncode(movieD.title) + "&y=&plot=full&r=xml";
+                    XmlDocument ombdRespond = MakeOmbdRequest(ombdRequest);
+
+                    if (ombdRespond != null)
                     {
-                        ViewBag.plot = ombdRespond.GetElementsByTagName("movie")[0].Attributes.GetNamedItem("plot").InnerText;
+                        try
+                        {
+                            ViewBag.plot = ombdRespond.GetElementsByTagName("movie")[0].Attributes.GetNamedItem("plot").InnerText;
+                        }
+                        catch (Exception e)
+                        {
+                            ViewBag.plot = "Error requesting plot";
+                        }
                     }
-                    catch (Exception e)
-                    {
+                    else
                         ViewBag.plot = "Error requesting plot";
-                    }
+
+
+                    ViewBag.genres = genres;
+                    ViewBag.movie = movieD;
+
+                    return View("Movie");
                 }
-                else
-                    ViewBag.plot = "Error requesting plot";
-
-
-                ViewBag.genres = genres;
-                ViewBag.movie = movieD;
-
-                context.Dispose();
-                return View("Movie");
             }
             catch (Exception e)
             {
@@ -91,28 +92,29 @@ namespace kainos2015intern.Controllers
         {
             try
             {
-                DataModels.dbContext context = new DataModels.dbContext();
-                string score = Request["scoreText"];
-                string genresArr = Request["genres"];
-                List<DataModels.genre> genresSelected = new List<DataModels.genre>();
-
-                List<DataModels.genre> genres = (from genre in context.genres
-                                  select genre).ToList();
-
-                if (!String.IsNullOrEmpty(genresArr))
+                using (DataModels.dbContext context = new DataModels.dbContext())
                 {
-                    genresSelected = (from genre in genres
-                                      where genresArr.Split(',').Contains(genre.id.ToString())
-                                      select genre).ToList();
+                    string score = Request["scoreText"];
+                    string genresArr = Request["genres"];
+                    List<DataModels.genre> genresSelected = new List<DataModels.genre>();
+
+                    List<DataModels.genre> genres = (from genre in context.genres
+                                                     select genre).ToList();
+
+                    if (!String.IsNullOrEmpty(genresArr))
+                    {
+                        genresSelected = (from genre in genres
+                                          where genresArr.Split(',').Contains(genre.id.ToString())
+                                          select genre).ToList();
+                    }
+
+                    ViewBag.score = score;
+                    ViewBag.genres = genres;
+                    ViewBag.genresSelected = genresSelected;
+                    ViewBag.movieList = getMoviesSearchList(genresSelected, score);
+
+                    return View("Search");
                 }
-
-                ViewBag.score = score;
-                ViewBag.genres = genres;
-                ViewBag.genresSelected = genresSelected;
-                ViewBag.movieList = getMoviesSearchList(genresSelected, score);
-
-                context.Dispose();
-                return View("Search");
             }
             catch (Exception e)
             {
@@ -129,44 +131,45 @@ namespace kainos2015intern.Controllers
         {
             try
             {
-                DataModels.dbContext context = new DataModels.dbContext();
-
-                var genresq = (from link in context.movie_genre
-                               join genres in context.genres on link.genre_id equals genres.id
-                               group link.genre_id by genres.name into genre
-                               select new
-                               {
-                                   genreName = genre.Key,
-                                   genreCount = genre.Count()
-                               });
-
-                List<string> genreName = new List<string>();
-                List<int> genreCount = new List<int>();
-                foreach (var list in genresq)
+                using (DataModels.dbContext context = new DataModels.dbContext())
                 {
-                    genreName.Add(list.genreName);
-                    genreCount.Add(list.genreCount);
+                    var genresq = (from link in context.movie_genre
+                                   join genres in context.genres on link.genre_id equals genres.id
+                                   group link.genre_id by genres.name into genre
+                                   select new
+                                   {
+                                       genreName = genre.Key,
+                                       genreCount = genre.Count()
+                                   });
+
+                    List<string> genreName = new List<string>();
+                    List<int> genreCount = new List<int>();
+                    foreach (var list in genresq)
+                    {
+                        genreName.Add(list.genreName);
+                        genreCount.Add(list.genreCount);
+                    }
+
+                    context.Dispose();
+
+                    Chart chart = new Chart();
+                    chart.ChartAreas.Add(new ChartArea());
+                    chart.Width = 1024;
+                    chart.Height = 768;
+                    chart.Series.Add(new Series("Genres"));
+                    chart.Series["Genres"].ChartType = SeriesChartType.Pie;
+                    chart.Series["Genres"].Points.DataBindXY(
+                        genresq.Select(g => g.genreName.ToString()).ToArray(),
+                        genresq.Select(g => g.genreCount).ToArray());
+                    chart.Series["Genres"].Label = "#PERCENT{P0} #VALX";
+                    chart.Series["Genres"]["PieLabelStyle"] = "Outside";
+                    chart.Series["Genres"]["PieLineColor"] = "Black";
+
+                    MemoryStream ms = new MemoryStream();
+                    chart.SaveImage(ms, ChartImageFormat.Png);
+
+                    return File(ms.ToArray(), "image/png");
                 }
-
-                context.Dispose();
-
-                Chart chart = new Chart();
-                chart.ChartAreas.Add(new ChartArea());
-                chart.Width = 1024;
-                chart.Height = 768;
-                chart.Series.Add(new Series("Genres"));
-                chart.Series["Genres"].ChartType = SeriesChartType.Pie;
-                chart.Series["Genres"].Points.DataBindXY(
-                    genresq.Select(g => g.genreName.ToString()).ToArray(),
-                    genresq.Select(g => g.genreCount).ToArray());
-                chart.Series["Genres"].Label = "#PERCENT{P0} #VALX";
-                chart.Series["Genres"]["PieLabelStyle"] = "Outside";
-                chart.Series["Genres"]["PieLineColor"] = "Black";
-
-                MemoryStream ms = new MemoryStream();
-                chart.SaveImage(ms, ChartImageFormat.Png);
-
-                return File(ms.ToArray(), "image/png");
             }
             catch (Exception e)
             {

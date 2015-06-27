@@ -139,7 +139,6 @@
   <ItemGroup>
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
-    <Content Include="LinqToDB.Templates\CopyMe.PostgreSQL.tt.txt" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -160,28 +159,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
-    <Content Include="LinqToDB.Templates\Validation.ttinclude" />
-    <Content Include="LinqToDB.Templates\T4Model.ttinclude" />
-    <Content Include="LinqToDB.Templates\PluralizationService.ttinclude" />
-    <Content Include="LinqToDB.Templates\NotifyPropertyChanged.ttinclude" />
-    <Content Include="LinqToDB.Templates\LinqToDB.ttinclude" />
-    <Content Include="LinqToDB.Templates\LinqToDB.Tools.ttinclude" />
-    <Content Include="LinqToDB.Templates\LinqToDB.Sybase.ttinclude" />
-    <Content Include="LinqToDB.Templates\LinqToDB.SqlServer.ttinclude" />
-    <Content Include="LinqToDB.Templates\LinqToDB.SQLite.ttinclude" />
-    <Content Include="LinqToDB.Templates\LinqToDB.SqlCe.ttinclude" />
-    <Content Include="LinqToDB.Templates\LinqToDB.PostgreSQL.ttinclude" />
-    <Content Include="LinqToDB.Templates\LinqToDB.Oracle.ttinclude" />
-    <Content Include="LinqToDB.Templates\LinqToDB.MySql.ttinclude" />
-    <Content Include="LinqToDB.Templates\LinqToDB.Informix.ttinclude" />
-    <Content Include="LinqToDB.Templates\LinqToDB.Firebird.ttinclude" />
-    <Content Include="LinqToDB.Templates\LinqToDB.DB2.ttinclude" />
-    <Content Include="LinqToDB.Templates\LinqToDB.Access.ttinclude" />
-    <Content Include="LinqToDB.Templates\EditableObject.ttinclude" />
-    <Content Include="LinqToDB.Templates\DataModel.ttinclude" />
-    <Content Include="LinqToDB.Templates\DataAnnotations.ttinclude" />
-    <Content Include="LinqToDB.Templates\!ReadMe.LinqToDB.md" />
-    <Content Include="LinqToDB.Templates\LinqToDB.PostgreSQL.Tools.ttinclude" />
     <None Include="Project_Readme.html" />
     <Content Include="Views\Shared\FilmNoId.cshtml" />
     <Content Include="Views\Home\Movie.cshtml" />
