@@ -1,7 +1,7 @@
 ﻿
 @{
     Layout = null;
-    dbContext.Movie movie = (dbContext.Movie) ViewBag.movie;
+    DataModels.movie movie = (DataModels.movie) ViewBag.movie;
 }
 
 <!DOCTYPE html>
@@ -13,11 +13,11 @@
             <tbody>
                 <tr>
                     <td>Film Title:</td>
-                    <td>@movie.OriginalTitle</td>
+                    <td>@movie.original_title</td>
                 </tr>
                 <tr>
                     <td>Average score:</td>
-                    <td>@movie.VoteAverage</td>
+                    <td>@movie.vote_average</td>
                 </tr>
                 <tr>
                     <td>Genres represented:</td>

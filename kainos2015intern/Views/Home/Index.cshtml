@@ -16,12 +16,12 @@
             </thead>
             <tbody>
                 @{
-                    foreach (dbContext.Movie movie in ViewBag.moviesRanking)
+                    foreach (DataModels.movie movie in ViewBag.moviesRanking)
                     {
                         <tr>
-                            <td>@movie.Title</td>
-                            <td>@movie.VoteAverage</td>
-                            <td>@Html.ActionLink("Details", "Movie", new { Id = @movie.Id })</td>
+                            <td>@movie.title</td>
+                            <td>@movie.vote_average</td>
+                            <td>@Html.ActionLink("Details", "Movie", new { Id = @movie.id })</td>
                         </tr>
                     }
                 }

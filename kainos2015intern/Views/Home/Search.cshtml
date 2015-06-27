@@ -9,7 +9,25 @@
     <div> 
         @using (Html.BeginForm("Search", "Home"))
         {
-            <input type="text" id="filmText" name="filmText" placeholder="Film name" value="@ViewBag.filmName"/>
+            int counter = 0;
+            foreach (string name in ViewBag.genres)
+            {
+                if (ViewBag.genresSelected != null)
+                {
+                    <label><input type="checkbox" name="genres" value=@name checked="@( ((List<string>)ViewBag.genresSelected).Contains(name.Split(' ')[0]) )" />@name</label>
+                }
+                else
+                {
+                    <label><input type="checkbox" name="genres" value=@name />@name</label>
+                }
+                counter++;
+                if (counter > 4)
+                {
+                    <br />
+                    counter = 0;
+                }
+            }
+            
             <input type="number" step="any" min="1" max="10" id="scoreText" name="scoreText" placeholder="Average score" value="@ViewBag.score"/>
             <input type="submit" id="submitSearch" value="Search" />
         }
@@ -24,12 +42,12 @@
             </thead>
             <tbody>
                 @{
-                    foreach (dbContext.Movie movie in ViewBag.movies)
+                    foreach (DataModels.movie movie in ViewBag.movieList)
                     {
                         <tr>
-                            <td>@movie.Title</td>
-                            <td>@movie.VoteAverage</td>
-                            <td>@Html.ActionLink("Details", "Movie", new { Id = @movie.Id })</td>
+                            <td>@movie.title</td>
+                            <td>@movie.vote_average</td>
+                            <td>@Html.ActionLink("Details", "Movie", new { Id = @movie.id })</td>
                         </tr>
                     }
                 }
