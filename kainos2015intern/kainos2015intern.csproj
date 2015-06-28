@@ -129,7 +129,10 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
-    <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\TopGenreController.cs" />
+    <Compile Include="Controllers\TopListController.cs" />
+    <Compile Include="Controllers\MovieController.cs" />
+    <Compile Include="Controllers\SearchController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -161,7 +164,7 @@
       <DependentUpon>Web.config</DependentUpon>
     </Content>
     <Content Include="Views\Web.config" />
-    <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\TopList\Index.cshtml" />
     <Content Include="Scripts\jquery-2.1.4.min.map" />
   </ItemGroup>
   <ItemGroup>
@@ -177,9 +180,9 @@
     <Content Include="Content\bootstrap.css.map" />
     <None Include="Project_Readme.html" />
     <Content Include="Views\Shared\FilmNoId.cshtml" />
-    <Content Include="Views\Home\Movie.cshtml" />
-    <Content Include="Views\Home\Search.cshtml" />
-    <Content Include="Views\Home\GetGenre.cshtml" />
+    <Content Include="Views\Movie\Movie.cshtml" />
+    <Content Include="Views\Search\Search.cshtml" />
+    <Content Include="Views\TopGenre\TopGenre.cshtml" />
     <Content Include="Views\Shared\ErrNoDbConn.cshtml" />
   </ItemGroup>
   <ItemGroup>

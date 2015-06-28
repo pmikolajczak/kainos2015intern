@@ -1,0 +1,48 @@
+﻿
+@{
+    Layout = null;
+    DataModels.movie movie = (DataModels.movie) ViewBag.movie;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <div> 
+        <table id="filmDetails" class="table">
+            <tbody>
+                <tr>
+                    <td>Film Title:</td>
+                    <td>@movie.original_title</td>
+                </tr>
+                <tr>
+                    <td>Average score:</td>
+                    <td>@movie.vote_average</td>
+                </tr>
+                <tr>
+                    <td>Genres represented:</td>
+                    <td>@{
+                        foreach (DataModels.genre genre in ViewBag.genres)
+                        {
+                            string name = genre.name;
+                            @name<br />
+                        }
+                    }
+                    </td>
+                </tr>
+                <tr>
+                    <td>Plot:</td>
+                    <td>@ViewBag.plot</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script src="~/Scripts/jquery-2.1.4.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+
+</body>
+</html>

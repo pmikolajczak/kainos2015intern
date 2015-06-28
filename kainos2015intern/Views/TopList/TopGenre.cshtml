@@ -1,0 +1,21 @@
+﻿
+@{
+    Layout = null;
+    List<Tuple<string, int>> genres = (List<Tuple<string, int>>)@ViewBag.genres;
+}
+
+<!DOCTYPE html>
+
+<html>
+<body>
+    <div>
+        @{
+            Chart chart = new Chart(800, 600);
+            foreach (Tuple<string, int> genre in genres)
+            {
+                chart.AddSeries(xField: genre.Item1, xValue: genre.Item2, chartType: "Pie chart");
+            }
+        }
+    </div>
+</body>
+</html>
